@@ -1,0 +1,24 @@
+.list-item span {
+	display: inline-block;
+    max-width: 500px;
+    
+    @media only screen and (max-width: 601px) {
+        max-width: 300px;
+    }
+}
+
+.sender-bg {
+	background-color: blanchedalmond;
+}
+
+.recipient-bg {
+	background-color: lightskyblue;
+}
+
+.message-box {
+    width: 100%;
+
+    input {
+        width: 100%;
+    }
+}
