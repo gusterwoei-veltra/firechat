@@ -32,7 +32,8 @@ jobs:
               command: |
                 # will change accordingly when ready
                 if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                  rm -rf www && npm run build
+                  rm -rf www
+                  npm run build
                 fi
           
           - run:
