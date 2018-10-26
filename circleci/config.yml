@@ -1,0 +1,54 @@
+version: 2
+jobs:
+   deploy:
+      working_directory: ~/app
+      docker:
+        - image: circleci/node:7.10
+      steps:
+          - checkout
+          
+          # Download and cache dependencies
+          - restore_cache:
+              keys:
+              - v1-dependencies-{{ checksum "package.json" }}
+              # fallback to using the latest cache if no exact match is found
+              - v1-dependencies-
+
+          - run:
+              name: Install necessary dependencies
+              command: npm install
+
+          - run:
+              name: Install Firebase tools
+              command: npm install --save-dev firebase-tools
+
+          - save_cache:
+              paths:
+                - node_modules
+              key: v1-dependencies-{{ checksum "package.json" }}
+
+          - run:
+              name: Build PWA bundle
+              command: |
+                # will change accordingly when ready
+                if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                  rm -rf www && npm run build
+                fi
+          
+          - run:
+              # deploy token is acquired via CLI: firebase login:ci
+              name: Deploy to Firebase
+              command: |
+                # will change accordingly when ready
+                if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                  ./node_modules/.bin/firebase deploy --token=$FIREBASE_TOKEN --project veltra-guster --only hosting
+                fi
+
+workflows:
+   version: 2
+   deploy:
+      jobs:
+        - deploy:
+            filters:
+              branches:
+                only: master

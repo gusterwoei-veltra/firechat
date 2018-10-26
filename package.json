@@ -2,8 +2,8 @@
 	"name": "@ionic/pwa-toolkit",
 	"private": true,
 	"version": "0.0.1",
-	"author": "Ionic Team",
-	"description": "Ionic PWA Toolkit",
+	"author": "Guster",
+	"description": "Firechat",
 	"license": "MIT",
 	"files": [
 		"dist/"
