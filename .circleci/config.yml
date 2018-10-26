@@ -41,7 +41,7 @@ jobs:
               command: |
                 # will change accordingly when ready
                 if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                  ./node_modules/.bin/firebase deploy --token=$FIREBASE_TOKEN --project veltra-guster --only hosting
+                  ./node_modules/.bin/firebase deploy --token=$FIREBASE_TOKEN --project vt-firechat --only hosting
                 fi
 
 workflows:
