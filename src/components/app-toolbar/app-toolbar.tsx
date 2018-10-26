@@ -1,5 +1,8 @@
-import { Component, Prop } from '@stencil/core';
+import { Component, Prop, State, Element } from '@stencil/core';
 import { StorageService } from '../../global/storage-service';
+import { AppService } from '../../global/app-service';
+import { EventBus, Subscribe } from '../../global/events/event-bus';
+import { AppEvent, EventName } from '../../global/events/app-event';
 
 @Component({
 	tag: 'app-toolbar',
@@ -8,11 +11,37 @@ import { StorageService } from '../../global/storage-service';
 export class AppToolbar {
 	@Prop() label: string = ''
 	@Prop() showBackButton: boolean = false
+	@Prop({ connect: 'ion-alert-controller' }) alertController: HTMLIonAlertControllerElement
+	@Prop({ connect: 'ion-toast-controller' }) toastController: HTMLIonToastControllerElement
 
-	// private async onAppIconClick() {
-	// 	let navigator = document.querySelector('ion-nav')
-	// 	await navigator.popToRoot()
-	// }
+	@Element() root: HTMLStencilElement
+	@State() tempName: string
+
+	@Subscribe()
+	public onEvent(event: AppEvent) {
+		switch(event.name) {
+			case EventName.EVENT_TEMP_NAME_CHANGE:
+				this.showTempName()
+				break
+		}
+	}
+
+	componentWillLoad() {
+		EventBus.get().register(this)
+		this.showTempName()
+	}
+
+	componentDidUnload() {
+		EventBus.get().unregister(this)
+	}
+
+	private showTempName() {
+		this.tempName = StorageService.get().getTempUser() ? StorageService.get().getTempUser().name : ''
+	}
+
+	private changeUsername() {
+		AppService.get().promptUsernameWhenNeeded(this.alertController, this.toastController, true)
+	}
 
 	render() {
 		return (
@@ -27,9 +56,9 @@ export class AppToolbar {
 
 					<ion-title>{this.label}</ion-title>
 
-					<ion-buttons slot="end">
+					<ion-buttons class='profile' slot="end" onClick={e => this.changeUsername()}>
 						<ion-icon size='large' class='mr-3' name="contact"></ion-icon>
-						<span class='mr-3'>{StorageService.get().getTempUser().name}</span>
+						<span class='mr-3'>{this.tempName}</span>
 					</ion-buttons>
 				</ion-toolbar>
 			</ion-header>

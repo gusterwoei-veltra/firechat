@@ -1,7 +1,8 @@
+$icon-size: 50px;
 home-page {
     .room-icon {
-        width: 60px;
-        height: 60px;
+        width: $icon-size;
+        height: $icon-size;
     }
     .root {
         background-color: #EEE;

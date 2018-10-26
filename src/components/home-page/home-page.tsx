@@ -1,9 +1,8 @@
 import { Component, State, Prop } from '@stencil/core';
 import { ChatRoom } from '../../global/models/chat-room';
 import firebase from 'firebase'
+import { AppService } from '../../global/app-service';
 import { StorageService } from '../../global/storage-service';
-import { Utils } from '../../helpers/utils';
-import { TempUser } from '../../global/models/temp-user';
 
 @Component({
 	tag: 'home-page',
@@ -16,39 +15,10 @@ export class HomePage {
 
 	componentDidLoad() {
 		this.getChatRooms()
-		// this.mRooms = Utils.getDummyChatRooms()
-		this.promptUsernameWhenNeeded()
-	}
 
-	private async promptUsernameWhenNeeded() {
 		let user = StorageService.get().getTempUser()
 		if (user) return
-
-		let alert = await this.alertController.create({
-			header: 'Enter your name',
-			backdropDismiss: false,
-			inputs: [
-				{
-					name: 'name',
-					placeholder: 'Your Name'
-				}
-			],
-			buttons: [
-				{
-					text: 'Confirm',
-					handler: data => {
-						if (data.name.trim() == '') return false
-
-						let user = StorageService.get().getTempUser() || new TempUser()
-						user.name = data.name
-
-						StorageService.get().saveTempUser(user)
-						Utils.showToast(this.toastController, `Welcome to Firechat! ${data.name}`)
-					}
-				}
-			]
-		})
-		alert.present()
+		AppService.get().promptUsernameWhenNeeded(this.alertController, this.toastController)
 	}
 
 	private async getChatRooms() {
@@ -74,12 +44,12 @@ export class HomePage {
 				<div class='root'>
 					{this.mRooms.map(room =>
 						<div padding class='d-flex align-items-center list-item' onClick={e => this.openChatRoom(room)}>
-							<img class='room-icon' src='/assets/icon/icon.png' />
+							<img class='room-icon' src='/assets/icon/speech.png' />
 							<div class='ml-2 mr-2 flex-grow-1'>
 								<span>{room.name}</span>
 								<span>{room.lastMessage}</span>
 							</div>
-							<span>{room.date}</span>
+							{/* <span>{room.date}</span> */}
 						</div>
 					)}
 				</div>

@@ -23,15 +23,15 @@ export class AppRoot {
 
 	componentWillLoad() {
 		var config = {
-			apiKey: "AIzaSyAaOjCozjxSsYB80re32-nDu684wo4Ismk",
-			authDomain: "hamster-im.firebaseapp.com",
-			databaseURL: "https://hamster-im.firebaseio.com",
-			projectId: "hamster-im",
-			storageBucket: "hamster-im.appspot.com",
-			messagingSenderId: "980376673268"
+			apiKey: "AIzaSyC6N4O8LLIG7df4soW1EWvBPxNVfMkZb2I",
+			authDomain: "vt-firechat.firebaseapp.com",
+			databaseURL: "https://vt-firechat.firebaseio.com",
+			projectId: "vt-firechat",
+			storageBucket: "vt-firechat.appspot.com",
+			messagingSenderId: "687135838346"
 		};
 		firebase.initializeApp(config);
-		
+
 		const firestore = firebase.firestore();
 		const settings = {/* your settings... */ timestampsInSnapshots: true };
 		firestore.settings(settings);
