@@ -1,19 +1,56 @@
 import { Component, State, Prop } from '@stencil/core';
 import { ChatRoom } from '../../global/models/chat-room';
-import { Utils } from '../../helpers/utils';
 import firebase from 'firebase'
+import { StorageService } from '../../global/storage-service';
+import { Utils } from '../../helpers/utils';
+import { TempUser } from '../../global/models/temp-user';
 
 @Component({
 	tag: 'home-page',
 	styleUrl: 'home-page.scss'
 })
 export class HomePage {
+	@Prop({ connect: 'ion-alert-controller' }) alertController: HTMLIonAlertControllerElement
+	@Prop({ connect: 'ion-toast-controller' }) toastController: HTMLIonToastControllerElement
 	@State() mRooms: ChatRoom[] = []
 
 	componentDidLoad() {
 		this.getChatRooms()
+		// this.mRooms = Utils.getDummyChatRooms()
+		this.promptUsernameWhenNeeded()
 	}
-	
+
+	private async promptUsernameWhenNeeded() {
+		let user = StorageService.get().getTempUser()
+		if (user) return
+
+		let alert = await this.alertController.create({
+			header: 'Enter your name',
+			backdropDismiss: false,
+			inputs: [
+				{
+					name: 'name',
+					placeholder: 'Your Name'
+				}
+			],
+			buttons: [
+				{
+					text: 'Confirm',
+					handler: data => {
+						if (data.name.trim() == '') return false
+
+						let user = StorageService.get().getTempUser() || new TempUser()
+						user.name = data.name
+
+						StorageService.get().saveTempUser(user)
+						Utils.showToast(this.toastController, `Welcome to Firechat! ${data.name}`)
+					}
+				}
+			]
+		})
+		alert.present()
+	}
+
 	private async getChatRooms() {
 		let rooms = await firebase.firestore().collection('rooms').get()
 		rooms.forEach(room => {
@@ -25,7 +62,7 @@ export class HomePage {
 	private openChatRoom(room: ChatRoom) {
 		let nav = document.querySelector('ion-nav')
 		nav.push('chat-room-page', {
-			room: room
+			room: room,
 		})
 	}
 

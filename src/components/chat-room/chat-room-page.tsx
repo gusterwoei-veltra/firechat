@@ -1,6 +1,8 @@
 import { Component, State, Element, Prop } from '@stencil/core';
 import { ChatRoom } from '../../global/models/chat-room';
 import firebase from 'firebase'
+import { Message } from '../../global/models/message';
+import { StorageService } from '../../global/storage-service';
 
 @Component({
 	tag: 'chat-room-page',
@@ -8,85 +10,82 @@ import firebase from 'firebase'
 })
 export class ChatRoomPage {
 	@Prop() room: ChatRoom
-
-	@State() mMessages: string[] = [];
-
-	mText: string;
+	@State() mMessages: Message[] = [];
+	@State() mText: string;
 
 	@Element() root: HTMLStencilElement
 
 	componentWillLoad() {
-		// this.mMessages = [
-		//     'When you set the same environment variable in multiple files, here’s the priority used by Compose to choose which value to use',
-		//     'In the example below, we set the same environment variable on an Environment file, and the Compose file',
-		//     'Configure Compose using environment variables',
-		//     'Place this file in the same directory as your directory of content',
-		//     'lorem ipsum',
-		//     'COPY nginx.conf /etc/nginx/nginx.conf',
-		//     'lorem ipsum',
-		//     'If you add a custom CMD in the Dockerfile, be sure to include -g daemon off; in the CMD in order for nginx to stay in the foreground',
-		//     'Using environment variables in nginx configuration',
-		//     'lorem ipsum',
-		//     'Running nginx in read-only mode',
-		// ]
-
 		this.getMessages()
 	}
 
 	private async getMessages() {
 		this.mMessages = []
+		this.initMessageListener()
+	}
 
-		// get messages for the room
-		let messages = await firebase.firestore().collection('rooms').doc(`${this.room.id}`).collection('messages').get()
-		messages.forEach(message => {
-			let data = message.get('data')
-			if (data && data.trim() != '') {
-				this.mMessages = [...this.mMessages, data]
-			}
-		})
-
+	private initMessageListener() {
 		// setup message listeners
-		firebase.firestore().collection(`rooms/${this.room.id}/messages`).onSnapshot(snapshot => {
-			// this.mMessages = [...this.mMessages, this.mText]
+		firebase.firestore().collection(`rooms/${this.room.id}/messages`).orderBy('timestamp').onSnapshot(snapshot => {
 			let changes = snapshot.docChanges()
-			console.log('snapshot', changes)
+
+			for (let i in changes) {
+				let message = changes[i].doc.data() as Message
+				// console.log('data', changes[i].doc.data())
+
+				if (this.mMessages === undefined) continue
+				this.mMessages.push(Object.assign(new Message(), message))
+			}
+
+			this.root.forceUpdate()
+
+			// scroll message list to bottom after a short delay
+			setTimeout(async () => {
+				let container = document.getElementsByClassName('chat-container')[0]
+				container.scrollTop = container.scrollHeight
+			}, 200);
 		})
 	}
 
 	private onMessageInput(e) {
 		if (!this.mText || this.mText.trim() == '') return
 
-		// add new message
-		firebase.firestore().collection(`rooms/${this.room.id}/messages`).add({
-			data: this.mText.trim()
-		}).then(ref => {
-			// clear text box
-			this.mText = ''
+		let msg = this.mText.trim()
 
-			// scroll message list to bottom after a short delay
-			setTimeout(() => {
-				let elem = document.querySelector('ion-content') as HTMLIonContentElement
-				elem.scrollToBottom(0)
-			}, 100);
-		}).catch(error => { })
+		// clear text box
+		this.mText = ''
+
+		// add new message
+		let message = new Message()
+		message.data = msg
+		message.timestamp = new Date().getTime()
+		message.user = StorageService.get().getTempUser()
+		
+		// save messages to the firestore
+		firebase.firestore()
+			.collection(`rooms/${this.room.id}/messages`)
+			.add(JSON.parse(JSON.stringify(message)))
 	}
 
 	render() {
 		return [
 			<app-toolbar label={this.room ? this.room.name : ''} showBackButton={true} />,
 
-			<ion-content padding>
-				<div id='chat-container'>
-					{this.mMessages.map((message, index) =>
-						<div class={`${index % 2 == 0 ? 'text-right' : 'text-left'} p-1 mt-2 mb-2 list-item`}>
-							<span class={`p-2 rounded ${index % 2 == 0 ? 'sender-bg' : 'recipient-bg'}`}>{message}</span>
+			<div padding class='chat-container'>
+				{this.mMessages.map((message, index) =>
+					<div class={`${message.isMine() ? 'text-right' : 'text-left'} p-1 mt-2 mb-2 list-item`}>
+						<div class={`p-2 rounded shadow-lg d-inline-block ${message.isMine() ? 'sender-bg' : 'recipient-bg'}`}>
+							{ !message.isMine() ?
+								<div class='recipient-name'>{message.user.name}</div> : null
+							}
+							<span>{message.data}</span>
 						</div>
-					)}
-				</div>
-			</ion-content>,
+					</div>
+				)}
+			</div>,
 
 			<div class='p-2 d-flex flex-row message-box'>
-				<input class='form-control flex-grow-1' type='text' placeholder='Your message' onInput={e => {
+				<input class='form-control flex-grow-1' type='text' value={this.mText} placeholder='Your message' onInput={e => {
 					this.mText = (e as any).target.value
 				}} onKeyDown={e => {
 					if (e.keyCode == 13) {

@@ -1,4 +1,5 @@
 import { AppUser } from "./models/app-user";
+import { TempUser } from "./models/temp-user";
 
 /**
  * @author Guster
@@ -48,4 +49,19 @@ export class StorageService {
 		let json = this.getItem('user')
 		return json ? JSON.parse(json) : null
 	}
+
+	public saveTempUser(user: TempUser) {
+		let usr = this.getTempUser() || user
+		usr.name = user.name
+		this.putItem('tempUser', JSON.stringify(usr))
+	}
+
+	public getTempUser(): TempUser {
+		let json = this.getItem('tempUser')
+		if (json) {
+			return Object.assign(new TempUser(), JSON.parse(json))
+		}
+		return null
+	}
+
 }

@@ -1,8 +1,9 @@
 import { Component, Prop } from '@stencil/core';
+import { StorageService } from '../../global/storage-service';
 
 @Component({
 	tag: 'app-toolbar',
-	styleUrl: 'app-toolbar.css'
+	styleUrl: 'app-toolbar.scss'
 })
 export class AppToolbar {
 	@Prop() label: string = ''
@@ -25,6 +26,11 @@ export class AppToolbar {
 					}
 
 					<ion-title>{this.label}</ion-title>
+
+					<ion-buttons slot="end">
+						<ion-icon size='large' class='mr-3' name="contact"></ion-icon>
+						<span class='mr-3'>{StorageService.get().getTempUser().name}</span>
+					</ion-buttons>
 				</ion-toolbar>
 			</ion-header>
 		);
