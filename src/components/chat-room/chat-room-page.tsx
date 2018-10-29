@@ -1,8 +1,11 @@
 import { Component, State, Element, Prop } from '@stencil/core';
 import { ChatRoom } from '../../global/models/chat-room';
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 import { Message } from '../../global/models/message';
-import { StorageService } from '../../global/storage-service';
+import { StorageService } from '../../global/services/storage-service';
+import { NotificationService } from '../../global/services/notification-service';
+import { Utils } from '../../helpers/utils';
 
 @Component({
 	tag: 'chat-room-page',
@@ -15,12 +18,19 @@ export class ChatRoomPage {
 
 	@Element() root: HTMLStencilElement
 
+	private mShowNotification: boolean = true
+	private mIsFirstTime: boolean = true
+
 	componentWillLoad() {
 		this.getMessages()
 	}
 
 	private async getMessages() {
 		this.mMessages = []
+
+		// request notification permission
+		NotificationService.get().requestPermission()
+
 		this.initMessageListener()
 	}
 
@@ -35,7 +45,19 @@ export class ChatRoomPage {
 
 				if (this.mMessages === undefined) continue
 				this.mMessages.push(Object.assign(new Message(), message))
+
+				// show incoming message notification to user when user's tab is not active
+				if (!Utils.isTabActive() && this.mShowNotification && !this.mIsFirstTime) {
+					this.mShowNotification = false
+					NotificationService.get().showNotification(message.data)
+
+					setTimeout(() => {
+						this.mShowNotification = true
+					}, 3000);
+				}
 			}
+
+			this.mIsFirstTime = false
 
 			this.root.forceUpdate()
 
@@ -60,7 +82,7 @@ export class ChatRoomPage {
 		message.data = msg
 		message.timestamp = new Date().getTime()
 		message.user = StorageService.get().getTempUser()
-		
+
 		// save messages to the firestore
 		firebase.firestore()
 			.collection(`rooms/${this.room.id}/messages`)
@@ -75,7 +97,7 @@ export class ChatRoomPage {
 				{this.mMessages.map((message, index) =>
 					<div class={`${message.isMine() ? 'text-right' : 'text-left'} p-1 mt-2 mb-2 list-item`}>
 						<div class={`p-2 rounded shadow-lg d-inline-block ${message.isMine() ? 'sender-bg' : 'recipient-bg'}`}>
-							{ !message.isMine() ?
+							{!message.isMine() ?
 								<div class='recipient-name'>{message.user.name}</div> : null
 							}
 							<span>{message.data}</span>

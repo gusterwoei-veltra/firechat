@@ -1,8 +1,8 @@
 import { StorageService } from "./storage-service";
-import { TempUser } from "./models/temp-user";
-import { Utils } from "../helpers/utils";
-import { EventBus } from "./events/event-bus";
-import { AppEvent, EventName } from "./events/app-event";
+import { TempUser } from "../models/temp-user";
+import { Utils } from "../../helpers/utils";
+import { EventBus } from "../events/event-bus";
+import { AppEvent, EventName } from "../events/app-event";
 
 /**
  * @author Guster

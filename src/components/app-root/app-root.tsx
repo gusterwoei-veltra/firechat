@@ -1,5 +1,6 @@
 import { Component, Prop, Listen } from '@stencil/core';
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/firestore';
 
 @Component({
 	tag: 'app-root',

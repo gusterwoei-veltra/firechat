@@ -1,7 +1,8 @@
 import { Component, Prop, State } from '@stencil/core';
 import { Utils } from '../../helpers/utils';
-import firebase from 'firebase';
-import { StorageService } from '../../global/storage-service';
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import { StorageService } from '../../global/services/storage-service';
 
 
 @Component({

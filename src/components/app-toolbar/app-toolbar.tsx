@@ -1,6 +1,6 @@
 import { Component, Prop, State, Element } from '@stencil/core';
-import { StorageService } from '../../global/storage-service';
-import { AppService } from '../../global/app-service';
+import { StorageService } from '../../global/services/storage-service';
+import { AppService } from '../../global/services/app-service';
 import { EventBus, Subscribe } from '../../global/events/event-bus';
 import { AppEvent, EventName } from '../../global/events/app-event';
 

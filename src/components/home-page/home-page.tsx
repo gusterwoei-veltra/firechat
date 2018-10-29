@@ -1,8 +1,9 @@
 import { Component, State, Prop } from '@stencil/core';
 import { ChatRoom } from '../../global/models/chat-room';
-import firebase from 'firebase'
-import { AppService } from '../../global/app-service';
-import { StorageService } from '../../global/storage-service';
+import firebase from 'firebase/app'
+import 'firebase/firestore'
+import { AppService } from '../../global/services/app-service';
+import { StorageService } from '../../global/services/storage-service';
 
 @Component({
 	tag: 'home-page',
@@ -15,7 +16,7 @@ export class HomePage {
 
 	componentDidLoad() {
 		this.getChatRooms()
-
+		
 		let user = StorageService.get().getTempUser()
 		if (user) return
 		AppService.get().promptUsernameWhenNeeded(this.alertController, this.toastController)
@@ -23,10 +24,13 @@ export class HomePage {
 
 	private async getChatRooms() {
 		let rooms = await firebase.firestore().collection('rooms').get()
+		let arr = []
 		rooms.forEach(room => {
 			let data = room.data()
-			this.mRooms = [...this.mRooms, new ChatRoom(data['name'], data['id'])]
+			// arr = [arr, new ChatRoom(data['name'], data['id'])]
+			arr.push(new ChatRoom(data['name'], data['id']))
 		})
+		this.mRooms = arr
 	}
 
 	private openChatRoom(room: ChatRoom) {

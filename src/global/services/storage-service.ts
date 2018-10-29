@@ -1,5 +1,5 @@
-import { AppUser } from "./models/app-user";
-import { TempUser } from "./models/temp-user";
+import { AppUser } from "../models/app-user";
+import { TempUser } from "../models/temp-user";
 
 /**
  * @author Guster

@@ -1,5 +1,5 @@
 import { TempUser } from "./temp-user";
-import { StorageService } from '../storage-service';
+import { StorageService } from '../services/storage-service';
 
 export class Message {
 	data: string
