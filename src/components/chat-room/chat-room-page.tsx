@@ -36,37 +36,40 @@ export class ChatRoomPage {
 
 	private initMessageListener() {
 		// setup message listeners
-		firebase.firestore().collection(`rooms/${this.room.id}/messages`).orderBy('timestamp').onSnapshot(snapshot => {
-			let changes = snapshot.docChanges()
+		firebase.firestore()
+			.collection(`rooms/${this.room.id}/messages`)
+			.orderBy('timestamp')
+			.onSnapshot(snapshot => {
+				let changes = snapshot.docChanges()
 
-			for (let i in changes) {
-				let message = changes[i].doc.data() as Message
-				// console.log('data', changes[i].doc.data())
+				for (let i in changes) {
+					let message = changes[i].doc.data() as Message
+					// console.log('data', changes[i].doc.data())
 
-				if (this.mMessages === undefined) continue
-				this.mMessages.push(Object.assign(new Message(), message))
+					if (this.mMessages === undefined) continue
+					this.mMessages.push(Object.assign(new Message(), message))
 
-				// show incoming message notification to user when user's tab is not active
-				if (!Utils.isTabActive() && this.mShowNotification && !this.mIsFirstTime) {
-					this.mShowNotification = false
-					NotificationService.get().showNotification(message.data)
+					// show incoming message notification to user when user's tab is not active
+					if (!Utils.isTabActive() && this.mShowNotification && !this.mIsFirstTime) {
+						this.mShowNotification = false
+						NotificationService.get().showNotification(message.data)
 
-					setTimeout(() => {
-						this.mShowNotification = true
-					}, 3000);
+						setTimeout(() => {
+							this.mShowNotification = true
+						}, 3000);
+					}
 				}
-			}
 
-			this.mIsFirstTime = false
+				this.mIsFirstTime = false
 
-			this.root.forceUpdate()
+				this.root.forceUpdate()
 
-			// scroll message list to bottom after a short delay
-			setTimeout(async () => {
-				let container = document.getElementsByClassName('chat-container')[0]
-				container.scrollTop = container.scrollHeight
-			}, 200);
-		})
+				// scroll message list to bottom after a short delay
+				setTimeout(async () => {
+					let container = document.getElementsByClassName('chat-container')[0]
+					container.scrollTop = container.scrollHeight
+				}, 200);
+			})
 	}
 
 	private onMessageInput(e) {

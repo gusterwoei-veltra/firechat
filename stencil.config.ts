@@ -14,7 +14,7 @@ export const config: Config = {
 				swSrc: 'src/sw.js'
 			},
 			prerenderLocations: [
-				{ path: '/chat' },				
+				{ path: '/chat' },
 			]
 		}
 	],

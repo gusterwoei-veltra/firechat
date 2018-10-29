@@ -4,6 +4,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import { AppService } from '../../global/services/app-service';
 import { StorageService } from '../../global/services/storage-service';
+import { isNoSubstitutionTemplateLiteral } from 'typescript';
 
 @Component({
 	tag: 'home-page',
@@ -43,7 +44,6 @@ export class HomePage {
 	render() {
 		return [
 			<app-toolbar label='Home' />,
-
 			<ion-content>
 				<div class='root'>
 					{this.mRooms.map(room =>
