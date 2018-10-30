@@ -2,4 +2,14 @@ app-toolbar {
 	.profile {
         cursor: pointer;
     }
+    .username {
+        max-width: 100px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+
+        @media screen and (min-width: '600px') {
+            max-width: 200px;        
+        }
+    }
 }

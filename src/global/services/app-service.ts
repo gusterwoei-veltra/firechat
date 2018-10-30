@@ -11,56 +11,57 @@ import { AppEvent, EventName } from "../events/app-event";
  * @modify date 2018-10-26 16:32:29
 */
 export class AppService {
-	private static _instance: AppService
+    private static _instance: AppService
 
-	public static get(): AppService {
-		if (this._instance == null) {
-			this._instance = new AppService()
-		}
-		return this._instance
-	}
+    public static get(): AppService {
+        if (this._instance == null) {
+            this._instance = new AppService()
+        }
+        return this._instance
+    }
 
-	private constructor() { }
+    private constructor() { }
 
-	public async promptUsernameWhenNeeded(alertController: HTMLIonAlertControllerElement, toastController: HTMLIonToastControllerElement, cancelable?: boolean) {
-		let buttons = []
+    public async promptUsernameWhenNeeded(alertController: HTMLIonAlertControllerElement, toastController: HTMLIonToastControllerElement, name?: string, cancelable?: boolean) {
+        let buttons = []
 
-		if (cancelable) {
-			buttons.push({
-				text: 'Cancel'
-			})
-		}
+        if (cancelable) {
+            buttons.push({
+                text: 'Cancel'
+            })
+        }
 
-		// confirm button
-		buttons.push({
-			text: 'Confirm',
-			handler: data => {
-				if (data.name.trim() == '') return false
+        // confirm button
+        buttons.push({
+            text: 'Confirm',
+            handler: data => {
+                if (data.name.trim() == '') return false
 
-				let user = StorageService.get().getTempUser() || new TempUser()
-				user.name = data.name
+                let user = StorageService.get().getTempUser() || new TempUser()
+                user.name = data.name
 
-				// update username
-				StorageService.get().saveTempUser(user)
-				Utils.showToast(toastController, `Welcome to Firechat! ${data.name}`)
+                // update username
+                StorageService.get().saveTempUser(user)
+                Utils.showToast(toastController, `Welcome to Firechat! ${data.name}`)
 
-				// emit event
-				EventBus.get().postSticky(new AppEvent(EventName.EVENT_TEMP_NAME_CHANGE))
-			}
-		})
+                // emit event
+                EventBus.get().postSticky(new AppEvent(EventName.EVENT_TEMP_NAME_CHANGE))
+            }
+        })
 
-		let alert = await alertController.create({
-			header: 'Enter your name',
-			backdropDismiss: false,
-			inputs: [
-				{
-					name: 'name',
-					placeholder: 'Your Name'
-				}
-			],
-			buttons: buttons
-		})
-		alert.present()
-	}
+        let alert = await alertController.create({
+            header: 'Enter your name',
+            backdropDismiss: false,
+            inputs: [
+                {
+                    name: 'name',
+                    placeholder: 'Your Name',
+                    value: name
+                }
+            ],
+            buttons: buttons
+        })
+        alert.present()
+    }
 
 }

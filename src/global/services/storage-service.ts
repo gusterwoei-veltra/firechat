@@ -10,58 +10,58 @@ import { TempUser } from "../models/temp-user";
 */
 
 export class StorageService {
-	private static _instance: StorageService
-	private mEnde: boolean = false
+    private static _instance: StorageService
+    private mEnde: boolean = false
 
-	private constructor() { }
+    private constructor() { }
 
-	public static get() {
-		if (StorageService._instance == null) {
-			StorageService._instance = new StorageService()
-		}
-		return StorageService._instance
-	}
+    public static get() {
+        if (StorageService._instance == null) {
+            StorageService._instance = new StorageService()
+        }
+        return StorageService._instance
+    }
 
-	public putItem(key: string, value: string) {
-		if (!window.localStorage) return
+    public putItem(key: string, value: string) {
+        if (!window.localStorage) return
 
-		window.localStorage.setItem(key, value)
-	}
+        window.localStorage.setItem(key, value)
+    }
 
-	public getItem(key: string): string {
-		if (!window.localStorage) return ''
+    public getItem(key: string): string {
+        if (!window.localStorage) return ''
 
-		let value = window.localStorage.getItem(key)
-		return value
-	}
+        let value = window.localStorage.getItem(key)
+        return value
+    }
 
-	public removeItem(key: string) {
-		return window.localStorage.removeItem(key)
-	}
+    public removeItem(key: string) {
+        return window.localStorage.removeItem(key)
+    }
 
-	// ============================= APP MISC SETTINGS =============================
+    // ============================= APP MISC SETTINGS =============================
 
-	public saveUser(user) {
-		this.putItem('user', JSON.stringify(user))
-	}
+    public saveUser(user) {
+        this.putItem('user', JSON.stringify(user))
+    }
 
-	public getUser(): AppUser {
-		let json = this.getItem('user')
-		return json ? JSON.parse(json) : null
-	}
+    public getUser(): AppUser {
+        let json = this.getItem('user')
+        return json ? JSON.parse(json) : null
+    }
 
-	public saveTempUser(user: TempUser) {
-		let usr = this.getTempUser() || user
-		usr.name = user.name
-		this.putItem('tempUser', JSON.stringify(usr))
-	}
+    public saveTempUser(user: TempUser) {
+        let usr = this.getTempUser() || user
+        usr.name = user.name
+        this.putItem('tempUser', JSON.stringify(usr))
+    }
 
-	public getTempUser(): TempUser {
-		let json = this.getItem('tempUser')
-		if (json) {
-			return Object.assign(new TempUser(), JSON.parse(json))
-		}
-		return null
-	}
+    public getTempUser(): TempUser {
+        let json = this.getItem('tempUser')
+        if (json) {
+            return Object.assign(new TempUser(), JSON.parse(json))
+        }
+        return null
+    }
 
 }

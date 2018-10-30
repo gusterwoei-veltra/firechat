@@ -10,7 +10,7 @@ import { Utils } from '../../helpers/utils';
 */
 
 export enum EventName {
-	EVENT_TEMP_NAME_CHANGE = 'EVENT_TEMP_NAME_CHANGE'
+    EVENT_TEMP_NAME_CHANGE = 'EVENT_TEMP_NAME_CHANGE'
 }
 
 export class AppEvent {

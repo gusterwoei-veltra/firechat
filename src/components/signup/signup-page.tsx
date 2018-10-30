@@ -9,8 +9,8 @@ import { StorageService } from '../../global/services/storage-service';
     styleUrl: 'signup-page.scss'
 })
 export class SignupPage {
-	@Prop({ connect: 'ion-loading-controller' }) loadingCtrl: HTMLIonLoadingControllerElement;
-	@Prop({connect: 'ion-toast-controller'}) toastCtrl: HTMLIonToastControllerElement
+    @Prop({ connect: 'ion-loading-controller' }) loadingCtrl: HTMLIonLoadingControllerElement;
+    @Prop({connect: 'ion-toast-controller'}) toastCtrl: HTMLIonToastControllerElement
 
     @State() email: string
     @State() password: string
@@ -29,7 +29,7 @@ export class SignupPage {
         }).catch(error => {
             // hide loading
             loading.dismiss()
-			Utils.showToast(this.toastCtrl, error.message)
+            Utils.showToast(this.toastCtrl, error.message)
 
             console.error(error)
             alert(error)

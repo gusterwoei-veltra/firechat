@@ -1,7 +1,6 @@
 import '@ionic/core';
+import { setupConfig } from '@ionic/core';
 
-// import { setupConfig } from '@ionic/core';
-
-// setupConfig({
-//   mode: 'ios'
-// });
+setupConfig({
+  mode: 'ios'
+});

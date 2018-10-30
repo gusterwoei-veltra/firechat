@@ -23,9 +23,9 @@ let META_VALUE: string = 'eventBusValue'
 const META_METHOD_NAME = 'methodName'
 export function Subscribe() {
     return function (target: Object, propertyKey: string, descriptor: PropertyDescriptor) {
-		target[META_KEY] = true
+        target[META_KEY] = true
         target[META_VALUE] = Utils.guid()
-		target[META_METHOD_NAME] = descriptor.value
+        target[META_METHOD_NAME] = descriptor.value
     };
 }
 
@@ -61,8 +61,8 @@ export class EventBus {
         //     return
         // }
 
-		// this.mObservers[observer[META_VALUE]] = observer
-		this.mObservers[Utils.guid()] = observer
+        // this.mObservers[observer[META_VALUE]] = observer
+        this.mObservers[Utils.guid()] = observer
 
         // emit all sticky events
         for (let i in this.mStickyEvents) {
